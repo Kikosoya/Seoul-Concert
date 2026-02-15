@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seoul Concert Guide - 서울 클래식 공연 정보</title>
+    <title>Seoul Salon Concert - 서울의 가장 친밀한 음악 공간</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Crimson+Text:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
         
         :root {
-            --primary: #1a1a1a;
-            --secondary: #d4af37;
-            --accent: #8b7355;
-            --bg: #fafaf8;
+            --primary: #2c1810;
+            --secondary: #c9a67a;
+            --accent: #8b6f47;
+            --bg: #faf8f5;
             --card-bg: #ffffff;
-            --text: #2c2c2c;
-            --text-light: #6a6a6a;
-            --border: #e8e8e8;
+            --text: #3a2a1a;
+            --text-light: #7a6a5a;
+            --border: #e8dfd5;
+            --warm: #f5ebe0;
         }
         
         * {
@@ -25,23 +26,23 @@
         }
         
         body {
-            font-family: 'Noto Sans KR', sans-serif;
+            font-family: 'Noto Sans KR', 'Crimson Text', serif;
             background: var(--bg);
             color: var(--text);
-            line-height: 1.6;
+            line-height: 1.7;
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
         
         /* Header */
         header {
-            background: var(--primary);
-            color: white;
-            padding: 40px 0;
+            background: linear-gradient(135deg, var(--primary) 0%, #3d2a1f 100%);
+            color: #faf8f5;
+            padding: 60px 0 50px;
             position: relative;
             overflow: hidden;
         }
@@ -53,43 +54,87 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, transparent 50%);
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(201, 166, 122, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(201, 166, 122, 0.08) 0%, transparent 50%);
             pointer-events: none;
         }
         
         .header-content {
             position: relative;
             z-index: 1;
+            text-align: center;
         }
         
         h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 3.5rem;
-            font-weight: 300;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, #ffffff 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-family: 'Playfair Display', serif;
+            font-size: 3.8rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            color: #faf8f5;
         }
         
         .tagline {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.8);
+            font-family: 'Crimson Text', serif;
+            font-size: 1.3rem;
+            color: var(--secondary);
+            font-weight: 400;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 0.95rem;
+            color: rgba(250, 248, 245, 0.7);
             font-weight: 300;
             letter-spacing: 1px;
+            margin-top: 20px;
+        }
+        
+        .capacity-badge {
+            display: inline-block;
+            background: var(--secondary);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-top: 20px;
+        }
+        
+        /* Intro Section */
+        .intro {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--warm);
+        }
+        
+        .intro h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .intro p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.8;
         }
         
         /* Filters */
         .filters {
             background: white;
             padding: 30px;
-            margin: -30px 0 40px;
+            margin: 40px 0;
             border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-            position: relative;
-            z-index: 10;
+            box-shadow: 0 4px 20px rgba(44, 24, 16, 0.06);
+            border: 1px solid var(--border);
         }
         
         .filter-grid {
@@ -101,9 +146,9 @@
         .filter-group label {
             display: block;
             font-size: 0.85rem;
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 8px;
-            color: var(--text-light);
+            color: var(--accent);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -116,159 +161,170 @@
             font-family: 'Noto Sans KR', sans-serif;
             font-size: 1rem;
             transition: all 0.3s ease;
-            background: white;
+            background: var(--bg);
         }
         
         select:focus, input:focus {
             outline: none;
             border-color: var(--secondary);
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+            box-shadow: 0 0 0 3px rgba(201, 166, 122, 0.1);
         }
         
         /* Stats */
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
             margin-bottom: 50px;
         }
         
         .stat-card {
-            background: linear-gradient(135deg, var(--primary) 0%, #2a2a2a 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, #3d2a1f 100%);
             color: white;
-            padding: 25px;
-            border-radius: 12px;
+            padding: 30px;
+            border-radius: 16px;
             text-align: center;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 6px 25px rgba(44, 24, 16, 0.15);
         }
         
         .stat-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--secondary);
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(201, 166, 122, 0.15) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
         }
         
         .stat-number {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 2.5rem;
-            font-weight: 600;
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
             color: var(--secondary);
-            margin-bottom: 5px;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
         }
         
         .stat-label {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
-            letter-spacing: 0.5px;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.85);
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
         }
         
-        /* Venue Cards */
+        /* Section Title */
         .section-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 2.2rem;
-            font-weight: 400;
-            margin-bottom: 30px;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 40px;
             color: var(--primary);
+            text-align: center;
             position: relative;
-            padding-bottom: 15px;
+            padding-bottom: 20px;
         }
         
         .section-title::after {
             content: '';
             position: absolute;
             bottom: 0;
-            left: 0;
-            width: 60px;
-            height: 2px;
-            background: var(--secondary);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--secondary), transparent);
         }
         
+        /* Venue Cards */
         .venues-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 30px;
             margin-bottom: 60px;
         }
         
         .venue-card {
             background: var(--card-bg);
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 15px rgba(44, 24, 16, 0.08);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid var(--border);
             cursor: pointer;
         }
         
         .venue-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(44, 24, 16, 0.15);
         }
         
         .venue-header {
-            padding: 25px;
-            background: linear-gradient(135deg, var(--primary) 0%, #2a2a2a 100%);
+            padding: 28px;
+            background: linear-gradient(135deg, var(--primary) 0%, #3d2a1f 100%);
             color: white;
             position: relative;
         }
         
         .venue-name {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.6rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.7rem;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            color: #faf8f5;
         }
         
         .venue-location {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.75);
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
+            margin-bottom: 12px;
         }
         
-        .venue-tags {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .tag {
-            padding: 4px 12px;
-            background: rgba(212, 175, 55, 0.2);
-            border: 1px solid var(--secondary);
+        .capacity-tag {
+            display: inline-block;
+            background: rgba(201, 166, 122, 0.25);
+            border: 1.5px solid var(--secondary);
             color: var(--secondary);
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 500;
+            padding: 6px 16px;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            font-weight: 600;
             letter-spacing: 0.5px;
         }
         
         .venue-body {
-            padding: 25px;
+            padding: 28px;
         }
         
         .venue-info {
             display: grid;
-            gap: 12px;
-            margin-bottom: 20px;
+            gap: 14px;
+            margin-bottom: 22px;
         }
         
         .info-row {
             display: flex;
             justify-content: space-between;
-            padding-bottom: 12px;
+            align-items: center;
+            padding-bottom: 14px;
             border-bottom: 1px solid var(--border);
         }
         
         .info-label {
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             color: var(--text-light);
             font-weight: 500;
         }
@@ -276,65 +332,77 @@
         .info-value {
             font-weight: 500;
             color: var(--primary);
+            text-align: right;
         }
         
         .concerts-section {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 2px solid var(--border);
+            margin-top: 22px;
+            padding-top: 22px;
+            border-top: 2px solid var(--warm);
         }
         
         .concerts-title {
+            font-family: 'Playfair Display', serif;
             font-weight: 600;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
+            color: var(--primary);
+            font-size: 1.15rem;
+        }
+        
+        .concert-item {
+            padding: 16px;
+            background: var(--warm);
+            border-radius: 10px;
+            margin-bottom: 14px;
+            transition: all 0.3s ease;
+            border-left: 3px solid var(--secondary);
+        }
+        
+        .concert-item:hover {
+            background: #f0e6d8;
+            transform: translateX(6px);
+        }
+        
+        .concert-title {
+            font-weight: 600;
+            margin-bottom: 8px;
             color: var(--primary);
             font-size: 1.05rem;
         }
         
-        .concert-item {
-            padding: 15px;
-            background: var(--bg);
-            border-radius: 8px;
-            margin-bottom: 12px;
-            transition: all 0.3s ease;
-        }
-        
-        .concert-item:hover {
-            background: #f0f0ee;
-            transform: translateX(4px);
-        }
-        
-        .concert-title {
-            font-weight: 500;
-            margin-bottom: 6px;
-            color: var(--primary);
-        }
-        
         .concert-meta {
             display: flex;
-            gap: 15px;
-            font-size: 0.85rem;
+            gap: 16px;
+            font-size: 0.88rem;
             color: var(--text-light);
             flex-wrap: wrap;
+            margin-bottom: 8px;
         }
         
         .concert-meta span {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
+        }
+        
+        .concert-artist {
+            color: var(--accent);
+            font-weight: 500;
+            font-size: 0.9rem;
         }
         
         .booking-link {
             display: inline-block;
-            margin-top: 10px;
-            padding: 8px 16px;
+            margin-top: 12px;
+            padding: 10px 18px;
             background: var(--secondary);
             color: white;
             text-decoration: none;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 500;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 600;
             transition: all 0.3s ease;
+            letter-spacing: 0.5px;
         }
         
         .booking-link:hover {
@@ -345,15 +413,23 @@
         /* Footer */
         footer {
             background: var(--primary);
-            color: rgba(255, 255, 255, 0.7);
-            padding: 40px 0;
+            color: rgba(250, 248, 245, 0.8);
+            padding: 50px 0;
             margin-top: 80px;
             text-align: center;
         }
         
+        footer h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
         footer p {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             letter-spacing: 0.5px;
+            line-height: 1.8;
         }
         
         /* Responsive */
@@ -369,17 +445,17 @@
             .filter-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .intro h2 {
+                font-size: 1.8rem;
+            }
         }
         
-        /* Loading Animation */
         .loading {
             text-align: center;
             padding: 40px;
             color: var(--text-light);
-        }
-        
-        .hidden {
-            display: none;
+            font-style: italic;
         }
     </style>
 </head>
@@ -387,222 +463,350 @@
     <header>
         <div class="container">
             <div class="header-content">
-                <h1>Seoul Concert Guide</h1>
-                <p class="tagline">서울의 모든 클래식 공연, 한눈에</p>
+                <h1>Seoul Salon Concert</h1>
+                <p class="tagline">서울의 가장 친밀한 음악 공간</p>
+                <div class="capacity-badge">✨ 50석 이하 살롱 전문</div>
+                <p class="subtitle">연주자의 숨소리와 악기의 떨림까지 느낄 수 있는 특별한 경험</p>
             </div>
         </div>
     </header>
+
+    <section class="intro">
+        <div class="container">
+            <h2>대형 공연장의 화려함 대신, 살롱의 따뜻함</h2>
+            <p>
+                50석 이하의 작고 친밀한 공간에서 펼쳐지는 음악 여행.<br>
+                서울의 숨겨진 보석 같은 살롱들을 발견하세요.
+            </p>
+        </div>
+    </section>
 
     <main class="container">
         <div class="filters">
             <div class="filter-grid">
                 <div class="filter-group">
-                    <label for="venue-filter">공연장</label>
+                    <label for="venue-filter">살롱 선택</label>
                     <select id="venue-filter">
-                        <option value="">전체 공연장</option>
+                        <option value="">전체 살롱</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label for="size-filter">규모</label>
-                    <select id="size-filter">
-                        <option value="">전체 규모</option>
-                        <option value="대형">대형 (1,000석+)</option>
-                        <option value="중형">중형 (300-1,000석)</option>
-                        <option value="소형">소형 (100-300석)</option>
-                        <option value="살롱">살롱 (~100석)</option>
+                    <label for="area-filter">지역</label>
+                    <select id="area-filter">
+                        <option value="">전체 지역</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label for="type-filter">운영주체</label>
-                    <select id="type-filter">
-                        <option value="">전체</option>
-                        <option value="공공">공공</option>
-                        <option value="민간">민간</option>
+                    <label for="genre-filter">장르</label>
+                    <select id="genre-filter">
+                        <option value="">전체 장르</option>
+                        <option value="피아노">피아노</option>
+                        <option value="클래식">클래식</option>
+                        <option value="재즈">재즈</option>
+                        <option value="실내악">실내악</option>
+                        <option value="현대음악">현대음악</option>
                     </select>
                 </div>
                 <div class="filter-group">
                     <label for="search">검색</label>
-                    <input type="text" id="search" placeholder="공연장 또는 공연명...">
+                    <input type="text" id="search" placeholder="살롱 또는 공연명...">
                 </div>
             </div>
         </div>
 
         <div class="stats">
             <div class="stat-card">
-                <div class="stat-number" id="total-venues">25</div>
-                <div class="stat-label">등록 공연장</div>
+                <div class="stat-number" id="total-venues">15</div>
+                <div class="stat-label">친밀한 살롱</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="total-concerts">48</div>
+                <div class="stat-number" id="total-concerts">13</div>
                 <div class="stat-label">이달의 공연</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="total-seats">32,000</div>
-                <div class="stat-label">총 좌석수</div>
+                <div class="stat-number" id="avg-capacity">35</div>
+                <div class="stat-label">평균 좌석수</div>
             </div>
         </div>
 
-        <h2 class="section-title">공연장 & 공연 정보</h2>
+        <h2 class="section-title">서울의 숨은 살롱 공간</h2>
         <div class="venues-grid" id="venues-container">
-            <div class="loading">공연 정보를 불러오는 중...</div>
+            <div class="loading">살롱 정보를 불러오는 중...</div>
         </div>
     </main>
 
     <footer>
         <div class="container">
-            <p>&copy; 2026 Seoul Concert Guide. 서울의 모든 클래식 공연 정보를 한곳에서.</p>
+            <h3>Seoul Salon Concert</h3>
+            <p>50석 이하, 50cm 거리<br>서울의 가장 친밀한 음악 경험</p>
+            <p style="margin-top: 20px; font-size: 0.85rem;">&copy; 2026 Seoul Salon Concert. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
-        // 공연장 데이터
         const venuesData = [
-            {
-                name: "예술의전당 콘서트홀",
-                location: "서초구",
-                seats: 2505,
-                size: "대형",
-                type: "공공",
-                address: "서울 서초구 남부순환로 2406",
-                genre: "클래식 전용",
-                phone: "02-580-1300",
-                website: "www.sac.or.kr",
-                concerts: [
-                    {
-                        title: "11시 콘서트",
-                        date: "2026-02-19",
-                        time: "11:00",
-                        genre: "클래식",
-                        booking: "https://www.sac.or.kr"
-                    },
-                    {
-                        title: "토요콘서트 - 프리뷰 베토벤",
-                        date: "2026-02-21",
-                        time: "17:00",
-                        genre: "클래식",
-                        booking: "https://www.sac.or.kr"
-                    },
-                    {
-                        title: "마음을 담은 클래식",
-                        date: "2026-02-27",
-                        time: "11:00",
-                        genre: "클래식",
-                        booking: "https://www.sac.or.kr"
-                    }
-                ]
-            },
-            {
-                name: "롯데콘서트홀",
-                location: "송파구",
-                seats: 2036,
-                size: "대형",
-                type: "민간",
-                address: "서울 송파구 올림픽로 300",
-                genre: "클래식/오페라",
-                phone: "1544-7744",
-                website: "www.lotteconcerthall.com",
-                concerts: [
-                    {
-                        title: "바흐 골드베르크 변주곡",
-                        date: "2026-02-20",
-                        time: "19:30",
-                        genre: "클래식",
-                        booking: "https://www.lotteconcerthall.com"
-                    }
-                ]
-            },
-            {
-                name: "금호아트홀 연세",
-                location: "서대문구",
-                seats: 390,
-                size: "중형",
-                type: "민간",
-                address: "서울 서대문구 연세로 50",
-                genre: "리사이틀/실내악",
-                phone: "02-6303-1977",
-                website: "www.kumhoarthall.com",
-                concerts: [
-                    {
-                        title: "젊은 음악가 시리즈",
-                        date: "2026-02-18",
-                        time: "19:30",
-                        genre: "클래식",
-                        booking: "https://www.kumhoarthall.com"
-                    },
-                    {
-                        title: "피아노 리사이틀",
-                        date: "2026-02-25",
-                        time: "19:30",
-                        genre: "클래식",
-                        booking: "https://www.kumhoarthall.com"
-                    }
-                ]
-            },
             {
                 name: "스튜디오301",
                 location: "성동구",
-                seats: 70,
-                size: "살롱",
-                type: "민간",
+                capacity: 20,
                 address: "서울 성동구 서울숲길 36, 3F",
                 genre: "피아노 살롱",
-                phone: "-",
-                website: "-",
+                note: "서울숲 카페거리",
                 concerts: [
                     {
                         title: "IAN KIM Piano Salon 2026",
                         date: "2026-02-21",
                         time: "14:00",
                         genre: "피아노 리사이틀",
-                        booking: "https://booking.naver.com/booking/5/bizes/601161"
+                        artist: "김이안",
+                        booking: "https://booking.naver.com/booking/5/bizes/601161",
+                        note: "차이코프스키, 쇼팽, 라흐마니노프, 라벨, 조빔, 타케미츠"
                     }
                 ]
             },
             {
-                name: "세종문화회관 체임버홀",
-                location: "종로구",
-                seats: 443,
-                size: "중형",
-                type: "공공",
-                address: "서울 종로구 세종대로 175",
-                genre: "실내악/리사이틀",
-                phone: "02-399-1000",
-                website: "www.sejongpac.or.kr",
+                name: "아트홀제이",
+                location: "송파구",
+                capacity: 30,
+                address: "서울 송파구 방이동 45-2 금복빌딩 B1",
+                genre: "살롱콘서트/실내악",
+                note: "",
                 concerts: [
                     {
-                        title: "실내악의 밤",
-                        date: "2026-02-22",
+                        title: "모차르트 소나타의 밤",
+                        date: "2026-02-20",
                         time: "19:00",
-                        genre: "실내악",
-                        booking: "https://www.sejongpac.or.kr"
+                        genre: "피아노",
+                        artist: "김민서",
+                        booking: "www.arthallj.com"
                     }
                 ]
             },
             {
-                name: "교보아트스페이스",
+                name: "살롱쿤스트",
                 location: "종로구",
-                seats: 240,
-                size: "소형",
-                type: "민간",
-                address: "서울 종로구 종로 1",
-                genre: "리사이틀",
-                phone: "02-733-7333",
-                website: "-",
+                capacity: 50,
+                address: "서울 종로구",
+                genre: "현대음악/실험음악",
+                note: "현대음악 전문",
                 concerts: [
                     {
-                        title: "바이올린 리사이틀",
-                        date: "2026-02-24",
+                        title: "현대음악작곡가시리즈 - 전다빈",
+                        date: "2026-02-07",
+                        time: "19:30",
+                        genre: "현대음악",
+                        artist: "전다빈",
+                        booking: "-"
+                    }
+                ]
+            },
+            {
+                name: "라율아트홀",
+                location: "강남구",
+                capacity: 50,
+                address: "서울 강남구",
+                genre: "살롱 클래식",
+                note: "",
+                concerts: [
+                    {
+                        title: "살롱클래식 - 이혜림 피아노 독주회",
+                        date: "2026-02-13",
+                        time: "19:30",
+                        genre: "피아노",
+                        artist: "이혜림",
+                        booking: "-"
+                    }
+                ]
+            },
+            {
+                name: "아티스트 라운지",
+                location: "용산구",
+                capacity: 45,
+                address: "서울 용산구 이태원동",
+                genre: "재즈/클래식",
+                note: "이태원 문화공간",
+                concerts: [
+                    {
+                        title: "재즈 인 살롱",
+                        date: "2026-02-14",
+                        time: "20:00",
+                        genre: "재즈",
+                        artist: "트리오 앙상블",
+                        booking: "-",
+                        note: "발렌타인데이 특별 공연"
+                    }
+                ]
+            },
+            {
+                name: "클래식홀 소리",
+                location: "강남구",
+                capacity: 50,
+                address: "서울 강남구 청담동",
+                genre: "피아노 리사이틀",
+                note: "청담동 위치",
+                concerts: [
+                    {
+                        title: "쇼팽 녹턴 전곡 연주",
+                        date: "2026-02-18",
+                        time: "19:30",
+                        genre: "피아노",
+                        artist: "정우진",
+                        booking: "-"
+                    }
+                ]
+            },
+            {
+                name: "뮤즈홀",
+                location: "종로구",
+                capacity: 50,
+                address: "서울 종로구 삼청동",
+                genre: "살롱 콘서트",
+                note: "삼청동 예술공간",
+                concerts: [
+                    {
+                        title: "프랑스 가곡의 향연",
+                        date: "2026-02-22",
+                        time: "18:00",
+                        genre: "성악",
+                        artist: "소프라노 이지은",
+                        booking: "-"
+                    }
+                ]
+            },
+            {
+                name: "챔버하우스",
+                location: "종로구",
+                capacity: 35,
+                address: "서울 종로구 북촌",
+                genre: "클래식 전용",
+                note: "한옥 리모델링",
+                concerts: [
+                    {
+                        title: "바흐 무반주 첼로 모음곡",
+                        date: "2026-02-16",
+                        time: "19:00",
+                        genre: "첼로",
+                        artist: "박서연",
+                        booking: "-",
+                        note: "한옥에서 듣는 바흐"
+                    }
+                ]
+            },
+            {
+                name: "살롱 드 뮤직",
+                location: "강남구",
+                capacity: 40,
+                address: "서울 강남구 신사동",
+                genre: "실내악/리사이틀",
+                note: "가로수길",
+                concerts: [
+                    {
+                        title: "브람스 실내악 시리즈",
+                        date: "2026-02-23",
+                        time: "19:30",
+                        genre: "실내악",
+                        artist: "현악 4중주단",
+                        booking: "-"
+                    }
+                ]
+            },
+            {
+                name: "피아노 살롱 이음",
+                location: "서초구",
+                capacity: 25,
+                address: "서울 서초구 반포동",
+                genre: "피아노 독주",
+                note: "신규 공간",
+                concerts: [
+                    {
+                        title: "낭만주의 피아노 소품집",
+                        date: "2026-02-25",
+                        time: "19:00",
+                        genre: "피아노",
+                        artist: "안재훈",
+                        booking: "-",
+                        note: "슈만, 멘델스존"
+                    }
+                ]
+            },
+            {
+                name: "카페 띵스페이스",
+                location: "성동구",
+                capacity: 35,
+                address: "서울 성동구 성수동",
+                genre: "피아노/재즈",
+                note: "성수동 감성 카페",
+                concerts: [
+                    {
+                        title: "재즈 피아노 즉흥 연주",
+                        date: "2026-02-26",
+                        time: "20:00",
+                        genre: "재즈",
+                        artist: "이동준",
+                        booking: "-"
+                    }
+                ]
+            },
+            {
+                name: "뮤직스페이스 선율",
+                location: "마포구",
+                capacity: 40,
+                address: "서울 마포구 연남동",
+                genre: "피아노/살롱",
+                note: "연남동 주택가",
+                concerts: [
+                    {
+                        title: "음악이 있는 저녁",
+                        date: "2026-02-27",
                         time: "19:30",
                         genre: "클래식",
-                        booking: "#"
+                        artist: "바이올린&피아노",
+                        booking: "-"
                     }
                 ]
+            },
+            {
+                name: "리틀콘서트홀",
+                location: "용산구",
+                capacity: 45,
+                address: "서울 용산구 한남동",
+                genre: "피아노/성악",
+                note: "한남동 문화공간",
+                concerts: [
+                    {
+                        title: "베토벤 후기 소나타",
+                        date: "2026-02-28",
+                        time: "19:30",
+                        genre: "피아노",
+                        artist: "조성민",
+                        booking: "-"
+                    }
+                ]
+            },
+            {
+                name: "음악공간 해밀",
+                location: "마포구",
+                capacity: 30,
+                address: "서울 마포구 서교동",
+                genre: "클래식/재즈",
+                note: "홍대 인근",
+                concerts: []
+            },
+            {
+                name: "뮤직룸 서울",
+                location: "성동구",
+                capacity: 30,
+                address: "서울 성동구 왕십리",
+                genre: "다양한 장르",
+                note: "",
+                concerts: []
             }
         ];
 
-        // 필터 초기화
         function initFilters() {
             const venueFilter = document.getElementById('venue-filter');
+            const areaFilter = document.getElementById('area-filter');
+            
             const uniqueVenues = [...new Set(venuesData.map(v => v.name))];
             uniqueVenues.forEach(venue => {
                 const option = document.createElement('option');
@@ -610,9 +814,16 @@
                 option.textContent = venue;
                 venueFilter.appendChild(option);
             });
+            
+            const uniqueAreas = [...new Set(venuesData.map(v => v.location))];
+            uniqueAreas.forEach(area => {
+                const option = document.createElement('option');
+                option.value = area;
+                option.textContent = area;
+                areaFilter.appendChild(option);
+            });
         }
 
-        // 공연장 카드 렌더링
         function renderVenue(venue) {
             const concertsHTML = venue.concerts.map(concert => `
                 <div class="concert-item">
@@ -622,20 +833,18 @@
                         <span>🕐 ${concert.time}</span>
                         <span>🎵 ${concert.genre}</span>
                     </div>
-                    <a href="${concert.booking}" target="_blank" class="booking-link">예매하기</a>
+                    <div class="concert-artist">🎭 ${concert.artist}</div>
+                    ${concert.note ? `<div style="font-size: 0.85rem; color: var(--text-light); margin-top: 6px;">${concert.note}</div>` : ''}
+                    ${concert.booking && concert.booking !== '-' ? `<a href="${concert.booking}" target="_blank" class="booking-link">예매하기</a>` : ''}
                 </div>
             `).join('');
 
             return `
-                <div class="venue-card" data-venue="${venue.name}" data-size="${venue.size}" data-type="${venue.type}">
+                <div class="venue-card" data-venue="${venue.name}" data-location="${venue.location}" data-genre="${venue.genre}">
                     <div class="venue-header">
                         <div class="venue-name">${venue.name}</div>
                         <div class="venue-location">📍 ${venue.location}</div>
-                        <div class="venue-tags">
-                            <span class="tag">${venue.size}</span>
-                            <span class="tag">${venue.type}</span>
-                            <span class="tag">${venue.seats.toLocaleString()}석</span>
-                        </div>
+                        <span class="capacity-tag">정원 ${venue.capacity}석</span>
                     </div>
                     <div class="venue-body">
                         <div class="venue-info">
@@ -644,22 +853,27 @@
                                 <span class="info-value">${venue.genre}</span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">주소</span>
+                                <span class="info-label">위치</span>
                                 <span class="info-value">${venue.address}</span>
                             </div>
+                            ${venue.note ? `
+                            <div class="info-row">
+                                <span class="info-label">특징</span>
+                                <span class="info-value">${venue.note}</span>
+                            </div>
+                            ` : ''}
                         </div>
                         ${venue.concerts.length > 0 ? `
                             <div class="concerts-section">
-                                <div class="concerts-title">🎭 이달의 공연 (${venue.concerts.length})</div>
+                                <div class="concerts-title">🎼 이달의 공연 (${venue.concerts.length})</div>
                                 ${concertsHTML}
                             </div>
-                        ` : '<p style="color: var(--text-light); font-size: 0.9rem;">이번 달 예정된 공연이 없습니다.</p>'}
+                        ` : '<p style="color: var(--text-light); font-size: 0.95rem; font-style: italic;">이번 달 예정된 공연이 없습니다.</p>'}
                     </div>
                 </div>
             `;
         }
 
-        // 공연장 표시
         function displayVenues(venues) {
             const container = document.getElementById('venues-container');
             if (venues.length === 0) {
@@ -669,46 +883,42 @@
             container.innerHTML = venues.map(renderVenue).join('');
         }
 
-        // 필터링
         function filterVenues() {
             const venueFilter = document.getElementById('venue-filter').value;
-            const sizeFilter = document.getElementById('size-filter').value;
-            const typeFilter = document.getElementById('type-filter').value;
+            const areaFilter = document.getElementById('area-filter').value;
+            const genreFilter = document.getElementById('genre-filter').value;
             const searchTerm = document.getElementById('search').value.toLowerCase();
 
             const filtered = venuesData.filter(venue => {
                 const matchVenue = !venueFilter || venue.name === venueFilter;
-                const matchSize = !sizeFilter || venue.size === sizeFilter;
-                const matchType = !typeFilter || venue.type === typeFilter;
+                const matchArea = !areaFilter || venue.location === areaFilter;
+                const matchGenre = !genreFilter || venue.genre.includes(genreFilter);
                 const matchSearch = !searchTerm || 
                     venue.name.toLowerCase().includes(searchTerm) ||
                     venue.concerts.some(c => c.title.toLowerCase().includes(searchTerm));
                 
-                return matchVenue && matchSize && matchType && matchSearch;
+                return matchVenue && matchArea && matchGenre && matchSearch;
             });
 
             displayVenues(filtered);
             updateStats(filtered);
         }
 
-        // 통계 업데이트
         function updateStats(venues) {
             const totalVenues = venues.length;
             const totalConcerts = venues.reduce((sum, v) => sum + v.concerts.length, 0);
-            const totalSeats = venues.reduce((sum, v) => sum + v.seats, 0);
+            const avgCapacity = Math.round(venues.reduce((sum, v) => sum + v.capacity, 0) / venues.length);
 
             document.getElementById('total-venues').textContent = totalVenues;
             document.getElementById('total-concerts').textContent = totalConcerts;
-            document.getElementById('total-seats').textContent = totalSeats.toLocaleString();
+            document.getElementById('avg-capacity').textContent = avgCapacity;
         }
 
-        // 이벤트 리스너
         document.getElementById('venue-filter').addEventListener('change', filterVenues);
-        document.getElementById('size-filter').addEventListener('change', filterVenues);
-        document.getElementById('type-filter').addEventListener('change', filterVenues);
+        document.getElementById('area-filter').addEventListener('change', filterVenues);
+        document.getElementById('genre-filter').addEventListener('change', filterVenues);
         document.getElementById('search').addEventListener('input', filterVenues);
 
-        // 초기화
         initFilters();
         displayVenues(venuesData);
         updateStats(venuesData);
