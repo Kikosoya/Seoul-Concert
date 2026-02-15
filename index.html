@@ -541,214 +541,104 @@
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-    <script>
-        const SHEET_ID = '1JDBxrFpX_R1eGrGBh2VvCN9UhR8Y2BgO';
-        const VENUES_GID = '0';
-        const CONCERTS_GID = '1374890749';
+<script>
+  const SHEET_ID = "1JDBxrFpX_R1eGrGBh2VvCN9UhR8Y2BgO";
 
-        let venuesData = [];
-        let concertsData = [];
+  // ✅ 너 구글시트 탭 이름 그대로 써야 함 (정확히 일치!)
+  const VENUES_SHEET_NAME = "살롱공연장";
+  const CONCERTS_SHEET_NAME = "공연";
 
-        async function loadGoogleSheetData(gid) {
-            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`;
-            
-            try {
-                const response = await fetch(url);
-                const csvText = await response.text();
-                
-                return new Promise((resolve, reject) => {
-                    Papa.parse(csvText, {
-                        header: true,
-                        skipEmptyLines: true,
-                        complete: (results) => resolve(results.data),
-                        error: (error) => reject(error)
-                    });
-                });
-            } catch (error) {
-                console.error('Error loading sheet:', error);
-                throw error;
-            }
-        }
+  let venuesData = [];
+  let concertsData = [];
 
-        async function loadData() {
-            try {
-                const venues = await loadGoogleSheetData(VENUES_GID);
-                const concerts = await loadGoogleSheetData(CONCERTS_GID);
-                
-                venuesData = venues.map(v => ({
-                    name: v['공연장명'] || '',
-                    location: v['지역'] || '',
-                    capacity: parseInt(v['좌석수']) || 0,
-                    address: v['주소'] || '',
-                    genre: v['장르특징'] || '',
-                    phone: v['전화번호'] || '-',
-                    website: v['웹사이트'] || '-',
-                    note: v['비고'] || ''
-                })).filter(v => v.name);
+  function sheetCsvUrlByName(sheetName) {
+    // gviz 방식: gid 필요 없음 + 비교적 안정적
+    return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+  }
 
-                concertsData = concerts.map(c => ({
-                    title: c['공연명'] || '',
-                    venueName: c['공연장명'] || '',
-                    date: c['날짜'] || '',
-                    time: c['시간'] || '',
-                    genre: c['장르'] || '',
-                    artist: c['출연자'] || '',
-                    booking: c['예매링크'] || '-',
-                    note: c['비고'] || ''
-                })).filter(c => c.title);
+  async function loadGoogleSheetByName(sheetName) {
+    const url = sheetCsvUrlByName(sheetName);
 
-                venuesData.forEach(venue => {
-                    venue.concerts = concertsData.filter(c => c.venueName === venue.name);
-                });
+    const res = await fetch(url, { cache: "no-store" });
+    const text = await res.text();
 
-                initFilters();
-                displayVenues(venuesData);
-                updateStats(venuesData);
-            } catch (error) {
-                console.error('Error loading data:', error);
-                document.getElementById('venues-container').innerHTML = 
-                    '<div class="error-message">데이터를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.</div>';
-            }
-        }
+    // ✅ 권한 문제/로그인 페이지가 오면 HTML이 내려옴 -> 이걸 잡아서 안내
+    if (text.trim().startsWith("<!DOCTYPE html") || text.includes("<html")) {
+      throw new Error(
+        `구글시트 권한/게시 문제로 CSV 대신 HTML이 내려왔습니다. (시트: ${sheetName})\n` +
+        `해결: Google Sheets에서 [공유: 링크가 있는 모든 사용자(뷰어)] + [파일 > 웹에 게시(Publish to the web)] 해주세요.`
+      );
+    }
 
-        function initFilters() {
-            const venueFilter = document.getElementById('venue-filter');
-            const areaFilter = document.getElementById('area-filter');
-            const genreFilter = document.getElementById('genre-filter');
-            
-            const uniqueVenues = [...new Set(venuesData.map(v => v.name))];
-            uniqueVenues.forEach(venue => {
-                const option = document.createElement('option');
-                option.value = venue;
-                option.textContent = venue;
-                venueFilter.appendChild(option);
-            });
-            
-            const uniqueAreas = [...new Set(venuesData.map(v => v.location))];
-            uniqueAreas.forEach(area => {
-                const option = document.createElement('option');
-                option.value = area;
-                option.textContent = area;
-                areaFilter.appendChild(option);
-            });
+    return new Promise((resolve, reject) => {
+      Papa.parse(text, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results) => resolve(results.data),
+        error: (err) => reject(err)
+      });
+    });
+  }
 
-            const uniqueGenres = [...new Set(venuesData.flatMap(v => 
-                v.genre.split('/').map(g => g.trim())
-            ))];
-            uniqueGenres.forEach(genre => {
-                if (genre) {
-                    const option = document.createElement('option');
-                    option.value = genre;
-                    option.textContent = genre;
-                    genreFilter.appendChild(option);
-                }
-            });
-        }
+  async function loadData() {
+    try {
+      const venues = await loadGoogleSheetByName(VENUES_SHEET_NAME);
+      const concerts = await loadGoogleSheetByName(CONCERTS_SHEET_NAME);
 
-        function renderVenue(venue) {
-            const concertsHTML = venue.concerts.map(concert => `
-                <div class="concert-item">
-                    <div class="concert-title">${concert.title}</div>
-                    <div class="concert-meta">
-                        <span>📅 ${formatDate(concert.date)}</span>
-                        <span>🕐 ${concert.time}</span>
-                        <span>🎵 ${concert.genre}</span>
-                    </div>
-                    ${concert.artist ? `<div class="concert-artist">🎭 ${concert.artist}</div>` : ''}
-                    ${concert.note ? `<div style="font-size: 0.85rem; color: var(--text-light); margin-top: 6px;">${concert.note}</div>` : ''}
-                    ${concert.booking && concert.booking !== '-' ? `<a href="${concert.booking.startsWith('http') ? concert.booking : 'https://' + concert.booking}" target="_blank" class="booking-link">예매하기</a>` : ''}
-                </div>
-            `).join('');
+      venuesData = venues.map(v => ({
+        name: v["공연장명"] || "",
+        location: v["지역"] || "",
+        capacity: parseInt(v["좌석수"]) || 0,
+        address: v["주소"] || "",
+        genre: v["장르특징"] || "",
+        phone: v["전화번호"] || "-",
+        website: v["웹사이트"] || "-",
+        note: v["비고"] || ""
+      })).filter(v => v.name);
 
-            return `
-                <div class="venue-card" data-venue="${venue.name}" data-location="${venue.location}" data-genre="${venue.genre}">
-                    <div class="venue-header">
-                        <div class="venue-name">${venue.name}</div>
-                        <div class="venue-location">📍 ${venue.location}</div>
-                        <span class="capacity-tag">정원 ${venue.capacity}석</span>
-                    </div>
-                    <div class="venue-body">
-                        <div class="venue-info">
-                            <div class="info-row">
-                                <span class="info-label">장르</span>
-                                <span class="info-value">${venue.genre}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">위치</span>
-                                <span class="info-value">${venue.address}</span>
-                            </div>
-                            ${venue.note ? `
-                            <div class="info-row">
-                                <span class="info-label">특징</span>
-                                <span class="info-value">${venue.note}</span>
-                            </div>
-                            ` : ''}
-                        </div>
-                        ${venue.concerts.length > 0 ? `
-                            <div class="concerts-section">
-                                <div class="concerts-title">🎼 이달의 공연 (${venue.concerts.length})</div>
-                                ${concertsHTML}
-                            </div>
-                        ` : '<p style="color: var(--text-light); font-size: 0.95rem; font-style: italic;">이번 달 예정된 공연이 없습니다.</p>'}
-                    </div>
-                </div>
-            `;
-        }
+      concertsData = concerts.map(c => ({
+        title: c["공연명"] || "",
+        venueName: c["공연장명"] || "",
+        date: c["날짜"] || "",
+        time: c["시간"] || "",
+        genre: c["장르"] || "",
+        artist: c["출연자"] || "",
+        booking: c["예매링크"] || "-",
+        note: c["비고"] || ""
+      })).filter(c => c.title);
 
-        function formatDate(dateStr) {
-            if (!dateStr) return '';
-            const date = new Date(dateStr);
-            if (isNaN(date)) return dateStr;
-            return date.toLocaleDateString('ko-KR', {month: 'long', day: 'numeric'});
-        }
+      venuesData.forEach(venue => {
+        venue.concerts = concertsData.filter(c => c.venueName === venue.name);
+      });
 
-        function displayVenues(venues) {
-            const container = document.getElementById('venues-container');
-            if (venues.length === 0) {
-                container.innerHTML = '<div class="loading">검색 결과가 없습니다.</div>';
-                return;
-            }
-            container.innerHTML = venues.map(renderVenue).join('');
-        }
+      initFilters();
+      displayVenues(venuesData);
+      updateStats(venuesData);
 
-        function filterVenues() {
-            const venueFilter = document.getElementById('venue-filter').value;
-            const areaFilter = document.getElementById('area-filter').value;
-            const genreFilter = document.getElementById('genre-filter').value;
-            const searchTerm = document.getElementById('search').value.toLowerCase();
+    } catch (error) {
+      console.error(error);
+      document.getElementById("venues-container").innerHTML = `
+        <div class="error-message">
+          <b>데이터를 불러오지 못했습니다.</b><br><br>
+          ${String(error.message || error)}<br><br>
+          ✅ 체크리스트<br>
+          1) 구글시트 공유: "링크가 있는 모든 사용자" + 권한 "뷰어"<br>
+          2) 구글시트 메뉴: 파일 → 웹에 게시(Publish to the web)<br>
+          3) 탭 이름이 정확히 "${VENUES_SHEET_NAME}", "${CONCERTS_SHEET_NAME}" 인지 확인
+        </div>
+      `;
+    }
+  }
 
-            const filtered = venuesData.filter(venue => {
-                const matchVenue = !venueFilter || venue.name === venueFilter;
-                const matchArea = !areaFilter || venue.location === areaFilter;
-                const matchGenre = !genreFilter || venue.genre.includes(genreFilter);
-                const matchSearch = !searchTerm || 
-                    venue.name.toLowerCase().includes(searchTerm) ||
-                    venue.concerts.some(c => c.title.toLowerCase().includes(searchTerm));
-                
-                return matchVenue && matchArea && matchGenre && matchSearch;
-            });
+  // 아래 함수들은 기존 그대로 사용 (너가 올린 코드에 이미 있음)
+  // initFilters, displayVenues, updateStats, filterVenues, formatDate, renderVenue ...
 
-            displayVenues(filtered);
-            updateStats(filtered);
-        }
+  document.getElementById('venue-filter').addEventListener('change', filterVenues);
+  document.getElementById('area-filter').addEventListener('change', filterVenues);
+  document.getElementById('genre-filter').addEventListener('change', filterVenues);
+  document.getElementById('search').addEventListener('input', filterVenues);
 
-        function updateStats(venues) {
-            const totalVenues = venues.length;
-            const totalConcerts = venues.reduce((sum, v) => sum + v.concerts.length, 0);
-            const avgCapacity = venues.length > 0 ? 
-                Math.round(venues.reduce((sum, v) => sum + v.capacity, 0) / venues.length) : 0;
-
-            document.getElementById('total-venues').textContent = totalVenues;
-            document.getElementById('total-concerts').textContent = totalConcerts;
-            document.getElementById('avg-capacity').textContent = avgCapacity;
-        }
-
-        document.getElementById('venue-filter').addEventListener('change', filterVenues);
-        document.getElementById('area-filter').addEventListener('change', filterVenues);
-        document.getElementById('genre-filter').addEventListener('change', filterVenues);
-        document.getElementById('search').addEventListener('input', filterVenues);
-
-        loadData();
-    </script>
+  loadData();
+</script>
 </body>
 </html>
