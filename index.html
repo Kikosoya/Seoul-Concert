@@ -543,8 +543,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 <script>
   const SHEET_ID = "1JDBxrFpX_R1eGrGBh2VvCN9UhR8Y2BgO";
-
-  // ✅ 너 구글시트 탭 이름 그대로 써야 함 (정확히 일치!)
   const VENUES_SHEET_NAME = "살롱공연장";
   const CONCERTS_SHEET_NAME = "공연";
 
@@ -552,21 +550,20 @@
   let concertsData = [];
 
   function sheetCsvUrlByName(sheetName) {
-    // gviz 방식: gid 필요 없음 + 비교적 안정적
     return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
   }
 
   async function loadGoogleSheetByName(sheetName) {
     const url = sheetCsvUrlByName(sheetName);
-
     const res = await fetch(url, { cache: "no-store" });
     const text = await res.text();
 
-    // ✅ 권한 문제/로그인 페이지가 오면 HTML이 내려옴 -> 이걸 잡아서 안내
+    // 권한/게시 문제로 CSV 대신 HTML이 내려오면 잡아내기
     if (text.trim().startsWith("<!DOCTYPE html") || text.includes("<html")) {
       throw new Error(
         `구글시트 권한/게시 문제로 CSV 대신 HTML이 내려왔습니다. (시트: ${sheetName})\n` +
-        `해결: Google Sheets에서 [공유: 링크가 있는 모든 사용자(뷰어)] + [파일 > 웹에 게시(Publish to the web)] 해주세요.`
+        `해결: Google Sheets에서 [공유: 링크가 있는 모든 사용자(뷰어)] + [파일 > 웹에 게시(Publish to the web)] 해주세요.\n` +
+        `테스트: ${url}`
       );
     }
 
@@ -620,7 +617,7 @@
       document.getElementById("venues-container").innerHTML = `
         <div class="error-message">
           <b>데이터를 불러오지 못했습니다.</b><br><br>
-          ${String(error.message || error)}<br><br>
+          ${String(error.message || error).replaceAll("\n","<br>")}<br><br>
           ✅ 체크리스트<br>
           1) 구글시트 공유: "링크가 있는 모든 사용자" + 권한 "뷰어"<br>
           2) 구글시트 메뉴: 파일 → 웹에 게시(Publish to the web)<br>
@@ -630,13 +627,147 @@
     }
   }
 
-  // 아래 함수들은 기존 그대로 사용 (너가 올린 코드에 이미 있음)
-  // initFilters, displayVenues, updateStats, filterVenues, formatDate, renderVenue ...
+  function initFilters() {
+    const venueFilter = document.getElementById("venue-filter");
+    const areaFilter = document.getElementById("area-filter");
+    const genreFilter = document.getElementById("genre-filter");
 
-  document.getElementById('venue-filter').addEventListener('change', filterVenues);
-  document.getElementById('area-filter').addEventListener('change', filterVenues);
-  document.getElementById('genre-filter').addEventListener('change', filterVenues);
-  document.getElementById('search').addEventListener('input', filterVenues);
+    // 초기화(중복 옵션 방지)
+    venueFilter.innerHTML = `<option value="">전체 살롱</option>`;
+    areaFilter.innerHTML = `<option value="">전체 지역</option>`;
+    genreFilter.innerHTML = `<option value="">전체 장르</option>`;
+
+    const uniqueVenues = [...new Set(venuesData.map(v => v.name))].sort();
+    uniqueVenues.forEach(name => {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      venueFilter.appendChild(opt);
+    });
+
+    const uniqueAreas = [...new Set(venuesData.map(v => v.location).filter(Boolean))].sort();
+    uniqueAreas.forEach(area => {
+      const opt = document.createElement("option");
+      opt.value = area;
+      opt.textContent = area;
+      areaFilter.appendChild(opt);
+    });
+
+    const uniqueGenres = [...new Set(
+      venuesData.flatMap(v => (v.genre || "").split("/").map(x => x.trim())).filter(Boolean)
+    )].sort();
+    uniqueGenres.forEach(genre => {
+      const opt = document.createElement("option");
+      opt.value = genre;
+      opt.textContent = genre;
+      genreFilter.appendChild(opt);
+    });
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    if (isNaN(date)) return dateStr;
+    return date.toLocaleDateString("ko-KR", { month: "long", day: "numeric" });
+  }
+
+  function renderVenue(venue) {
+    const concertsHTML = (venue.concerts || []).map(concert => `
+      <div class="concert-item">
+        <div class="concert-title">${concert.title}</div>
+        <div class="concert-meta">
+          <span>📅 ${formatDate(concert.date)}</span>
+          <span>🕐 ${concert.time || ""}</span>
+          <span>🎵 ${concert.genre || ""}</span>
+        </div>
+        ${concert.artist ? `<div class="concert-artist">🎭 ${concert.artist}</div>` : ""}
+        ${concert.note ? `<div style="font-size:0.85rem;color:var(--text-light);margin-top:6px;">${concert.note}</div>` : ""}
+        ${concert.booking && concert.booking !== "-" ? `
+          <a href="${concert.booking.startsWith("http") ? concert.booking : "https://" + concert.booking}"
+             target="_blank" class="booking-link">예매하기</a>` : ""}
+      </div>
+    `).join("");
+
+    return `
+      <div class="venue-card" data-venue="${venue.name}" data-location="${venue.location}" data-genre="${venue.genre}">
+        <div class="venue-header">
+          <div class="venue-name">${venue.name}</div>
+          <div class="venue-location">📍 ${venue.location || ""}</div>
+          <span class="capacity-tag">정원 ${venue.capacity || 0}석</span>
+        </div>
+        <div class="venue-body">
+          <div class="venue-info">
+            <div class="info-row">
+              <span class="info-label">장르</span>
+              <span class="info-value">${venue.genre || "-"}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">위치</span>
+              <span class="info-value">${venue.address || "-"}</span>
+            </div>
+            ${venue.note ? `
+              <div class="info-row">
+                <span class="info-label">특징</span>
+                <span class="info-value">${venue.note}</span>
+              </div>` : ""}
+          </div>
+          ${(venue.concerts && venue.concerts.length > 0) ? `
+            <div class="concerts-section">
+              <div class="concerts-title">🎼 이달의 공연 (${venue.concerts.length})</div>
+              ${concertsHTML}
+            </div>
+          ` : `<p style="color:var(--text-light);font-size:0.95rem;font-style:italic;">이번 달 예정된 공연이 없습니다.</p>`}
+        </div>
+      </div>
+    `;
+  }
+
+  function displayVenues(list) {
+    const container = document.getElementById("venues-container");
+    if (!list || list.length === 0) {
+      container.innerHTML = `<div class="loading">검색 결과가 없습니다.</div>`;
+      return;
+    }
+    container.innerHTML = list.map(renderVenue).join("");
+  }
+
+  function updateStats(list) {
+    const totalVenues = list.length;
+    const totalConcerts = list.reduce((sum, v) => sum + (v.concerts ? v.concerts.length : 0), 0);
+    const avgCapacity = list.length > 0
+      ? Math.round(list.reduce((sum, v) => sum + (v.capacity || 0), 0) / list.length)
+      : 0;
+
+    document.getElementById("total-venues").textContent = totalVenues;
+    document.getElementById("total-concerts").textContent = totalConcerts;
+    document.getElementById("avg-capacity").textContent = avgCapacity;
+  }
+
+  function filterVenues() {
+    const venueFilter = document.getElementById("venue-filter").value;
+    const areaFilter = document.getElementById("area-filter").value;
+    const genreFilter = document.getElementById("genre-filter").value;
+    const searchTerm = document.getElementById("search").value.toLowerCase();
+
+    const filtered = venuesData.filter(venue => {
+      const matchVenue = !venueFilter || venue.name === venueFilter;
+      const matchArea = !areaFilter || venue.location === areaFilter;
+      const matchGenre = !genreFilter || (venue.genre || "").includes(genreFilter);
+      const matchSearch = !searchTerm ||
+        (venue.name || "").toLowerCase().includes(searchTerm) ||
+        (venue.concerts || []).some(c => (c.title || "").toLowerCase().includes(searchTerm));
+
+      return matchVenue && matchArea && matchGenre && matchSearch;
+    });
+
+    displayVenues(filtered);
+    updateStats(filtered);
+  }
+
+  document.getElementById("venue-filter").addEventListener("change", filterVenues);
+  document.getElementById("area-filter").addEventListener("change", filterVenues);
+  document.getElementById("genre-filter").addEventListener("change", filterVenues);
+  document.getElementById("search").addEventListener("input", filterVenues);
 
   loadData();
 </script>
