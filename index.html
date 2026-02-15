@@ -518,7 +518,7 @@
             </div>
             <div class="stat-card">
                 <div class="stat-number" id="total-concerts">-</div>
-                <div class="stat-label">이달의 공연</div>
+                <div class="stat-label">공연</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number" id="avg-capacity">-</div>
@@ -526,7 +526,7 @@
             </div>
         </div>
 
-        <h2 class="section-title">서울의 숨은 살롱 공간</h2>
+        <h2 class="section-title">서울의 소중한 살롱 공간</h2>
         <div class="venues-grid" id="venues-container">
             <div class="loading">살롱 정보를 불러오는 중...</div>
         </div>
@@ -593,7 +593,7 @@
                     time: c['시간'] || '',
                     genre: c['장르'] || '',
                     artist: c['출연자'] || '',
-                    booking: c['예매링크'] || '-',
+                    booking: c['예매하기'] || '-',
                     note: c['비고'] || ''
                 })).filter(c => c.title);
 
